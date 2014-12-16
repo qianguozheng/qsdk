@@ -1,0 +1,31 @@
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -456,7 +456,8 @@ struct sk_buff {
+ 	__u8			l4_rxhash:1;
+ 	__u8			wifi_acked_valid:1;
+ 	__u8			wifi_acked:1;
+-	/* 10/12 bit hole (depending on ndisc_nodetype presence) */
++	__u8			fast_forwarded:1;
++	/* 9/11 bit hole (depending on ndisc_nodetype presence) */
+ 	kmemcheck_bitfield_end(flags2);
+ 
+ #ifdef CONFIG_NET_DMA
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -2228,8 +2228,14 @@ int dev_hard_start_xmit(struct sk_buff *
+ 		if (dev->priv_flags & IFF_XMIT_DST_RELEASE)
+ 			skb_dst_drop(skb);
+ 
+-		if (!list_empty(&ptype_all))
+-			dev_queue_xmit_nit(skb, dev);
++		/*
++		 * If this skb has been fast forwarded then we don't want it to
++		 * go to any taps (by definition we're trying to bypass them).
++		 */
++		if (unlikely(!skb->fast_forwarded)) {
++			if (!list_empty(&ptype_all))
++				dev_queue_xmit_nit(skb, dev);
++		}
+ 
+ 		skb_orphan_try(skb);
+ 

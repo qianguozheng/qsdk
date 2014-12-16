@@ -1,0 +1,48 @@
+#!/bin/sh
+#
+# Copyright (c) 2013 The Linux Foundation. All rights reserved.
+# Copyright (C) 2011-2012 OpenWrt.org
+#
+
+[ -e /etc/config/ubootenv ] && exit 0
+
+touch /etc/config/ubootenv
+
+. /lib/ar71xx.sh
+. /lib/uboot-envtools.sh
+. /lib/functions.sh
+
+board=$(ar71xx_board_name)
+
+default_uboot_env () {
+	UBOOTENV_PART=$(cat /proc/mtd | grep u-boot-env)
+	echo $UBOOTENV_PART | sed \
+		's/^\(mtd[0-9]*\): \([0-9]*\) \([0-9]*\) \"u-boot-env\"/\/dev\/\1\t0x00000000\t0x\2\t0x\3/g'
+}
+
+case "$board" in
+all0258n | \
+cap4200ag | \
+mr600)
+	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x10000" "0x10000"
+	;;
+cus227)
+	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x40000" "0x20000" "2"
+	;;
+alfa-ap96 | \
+all0315n | \
+om2p | \
+om2p-hs | \
+om2p-lc)
+	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x40000" "0x40000"
+	;;
+*)
+	env=$(default_uboot_env)
+	[ -n "${env}" ] && ubootenv_add_uci_config $env
+	;;
+esac
+
+config_load ubootenv
+config_foreach ubootenv_add_app_config ubootenv
+
+exit 0

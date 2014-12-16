@@ -1,0 +1,28 @@
+From 5bd1f7827d4f1ca147e9a419304358b50ba4d9d3 Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@codeaurora.org>
+Date: Fri, 7 Jun 2013 18:31:30 -0500
+Subject: [netdev] align NET_SKB_PAD for our platform
+
+We need our SKB to be correctly aligned for optimal performance.  We
+attempted to move this to L1_CACHE_BYTES, but there are assumptions
+in the wifi driver that there will be headroom > 32 bytes.  So, we
+choose the next L1_CACHE_BYTES-aligned value.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@codeaurora.org>
+---
+ include/linux/skbuff.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-3.3.8/include/linux/skbuff.h
+===================================================================
+--- linux-3.3.8.orig/include/linux/skbuff.h	2014-04-22 13:31:34.050956018 -0500
++++ linux-3.3.8/include/linux/skbuff.h	2014-05-06 15:47:23.859623392 -0500
+@@ -1559,7 +1559,7 @@
+  * NET_IP_ALIGN(2) + ethernet_header(14) + IP_header(20/40) + ports(8)
+  */
+ #ifndef NET_SKB_PAD
+-#define NET_SKB_PAD	max(48, L1_CACHE_BYTES)
++#define NET_SKB_PAD	max(32, L1_CACHE_BYTES)
+ #endif
+ 
+ extern int ___pskb_trim(struct sk_buff *skb, unsigned int len);

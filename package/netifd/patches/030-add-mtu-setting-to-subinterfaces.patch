@@ -1,0 +1,45 @@
+diff -Nur a/system-linux.c netifd-2013-05-13/system-linux.c
+--- a/system-linux.c	2014-02-24 11:32:47.767408367 +0800
++++ netifd-2013-05-13/system-linux.c	2014-02-24 11:37:16.147413405 +0800
+@@ -288,7 +288,19 @@
+ 
+ 	return 0;
+ }
++static int system_set_mtu(struct device * dev, int mtu,void * data)
++{
++	struct ifreq ifr;
++
++	if(!dev) return 0;
++
++	memset(&ifr, 0, sizeof(ifr));
+ 
++	ifr.ifr_addr.sa_family = AF_INET;
++	strncpy(ifr.ifr_name, dev->ifname, sizeof(ifr.ifr_name));
++	ifr.ifr_mtu = mtu;
++	return ioctl(sock_ioctl, SIOCSIFMTU, &ifr);
++}
+ static int system_bridge_if(const char *bridge, struct device *dev, int cmd, void *data)
+ {
+ 	struct ifreq ifr;
+@@ -382,6 +394,11 @@
+ 	char *oldbr;
+ 
+ 	system_set_disable_ipv6(dev, "1");
++
++	if (bridge->settings.flags & DEV_OPT_MTU){
++		system_set_mtu(dev,bridge->settings.mtu,NULL);
++	}
++
+ 	oldbr = system_get_bridge(dev->ifname, dev_buf, sizeof(dev_buf));
+ 	if (oldbr && !strcmp(oldbr, bridge->ifname))
+ 		return 0;
+@@ -392,6 +409,9 @@
+ int system_bridge_delif(struct device *bridge, struct device *dev)
+ {
+ 	system_set_disable_ipv6(dev, "0");
++	if (bridge->settings.flags & DEV_OPT_MTU){
++		system_set_mtu(dev,1500,NULL);
++	}
+ 	return system_bridge_if(bridge->ifname, dev, SIOCBRDELIF, NULL);
+ }
+ 

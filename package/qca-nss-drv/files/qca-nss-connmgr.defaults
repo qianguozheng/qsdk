@@ -1,0 +1,13 @@
+#!/bin/sh
+
+uci -q batch << EOF
+	delete firewall.qcanssconnmgr
+	set firewall.qcanssconnmgr=include
+	set firewall.qcanssconnmgr.type=script
+	set firewall.qcanssconnmgr.path=/etc/firewall.d/qca-nss-connmgr
+	set firewall.qcanssconnmgr.family=any
+	set firewall.qcanssconnmgr.reload=1
+	commit firewall
+EOF
+
+exit 0

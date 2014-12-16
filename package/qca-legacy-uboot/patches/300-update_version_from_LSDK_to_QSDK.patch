@@ -1,0 +1,11 @@
+--- a/lib_mips/board.c
++++ b/lib_mips/board.c
+@@ -59,7 +59,7 @@ ulong monitor_flash_len;
+ 
+ #ifdef BUILD_VERSION
+ const char version_string[] =
+-        U_BOOT_VERSION" (Build from LSDK-" BUILD_VERSION " at " __DATE__ " - " __TIME__ ")";
++        U_BOOT_VERSION" (Build from QSDK-" BUILD_VERSION " at " __DATE__ " - " __TIME__ ")";
+ #else
+ const char version_string[] =
+ 	U_BOOT_VERSION" (" __DATE__ " - " __TIME__ ")";

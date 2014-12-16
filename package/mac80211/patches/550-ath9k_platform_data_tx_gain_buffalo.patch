@@ -1,0 +1,10 @@
+--- a/include/linux/ath9k_platform.h
++++ b/include/linux/ath9k_platform.h
+@@ -35,6 +35,7 @@ struct ath9k_platform_data {
+ 	bool is_clk_25mhz;
+ 	bool disable_2ghz;
+ 	bool disable_5ghz;
++	bool tx_gain_buffalo;
+ 
+ 	int (*get_mac_revision)(void);
+ 	int (*external_reset)(void);

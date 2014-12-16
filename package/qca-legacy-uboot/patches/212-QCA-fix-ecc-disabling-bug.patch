@@ -1,0 +1,10 @@
+--- a/board/ar7240/common/ath_nand.c
++++ b/board/ar7240/common/ath_nand.c
+@@ -762,6 +762,7 @@ ath_nand_rw_buff(struct mtd_info *mtd, i
+ 			/* FIXME for writes FIXME */
+ 			memcpy(ath_nand_io_buf, buf, iolen);
+ 			ecc_needed = 1;
++	      		ath_nand_set_blk_state(mtd, addr, ATH_NAND_BLK_GOOD);
+ 		}
+ 
+ 		pa = (void *)virt_to_phys(ath_nand_io_buf);

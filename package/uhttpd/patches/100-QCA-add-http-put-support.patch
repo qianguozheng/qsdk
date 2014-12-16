@@ -1,0 +1,73 @@
+diff --git a/uhttpd-cgi.c b/uhttpd-cgi.c
+index 69af90d..2f5d668 100644
+--- a/uhttpd-cgi.c
++++ b/uhttpd-cgi.c
+@@ -534,7 +534,7 @@ bool uh_cgi_request(struct client *cl, struct path_info *pi,
+ 		state->content_length = cl->httpbuf.len;
+ 
+ 		/* find content length */
+-		if (req->method == UH_HTTP_MSG_POST)
++		if (req->method == UH_HTTP_MSG_POST || req->method == UH_HTTP_MSG_PUT)
+ 		{
+ 			foreach_header(i, req->headers)
+ 			{
+diff --git a/uhttpd-lua.c b/uhttpd-lua.c
+index 6e150b5..ac44249 100644
+--- a/uhttpd-lua.c
++++ b/uhttpd-lua.c
+@@ -552,7 +552,7 @@ bool uh_lua_request(struct client *cl, lua_State *L)
+ 		state->content_length = cl->httpbuf.len;
+ 
+ 		/* find content length */
+-		if (req->method == UH_HTTP_MSG_POST)
++		if (req->method == UH_HTTP_MSG_POST || req->method == UH_HTTP_MSG_PUT)
+ 		{
+ 			foreach_header(i, req->headers)
+ 			{
+diff --git a/uhttpd-ubus.c b/uhttpd-ubus.c
+index fbb4507..44a9e32 100644
+--- a/uhttpd-ubus.c
++++ b/uhttpd-ubus.c
+@@ -929,7 +929,7 @@ uh_ubus_request(struct client *cl, struct uh_ubus_state *state)
+ 	}
+ 
+ 	/* find content length */
+-	if (cl->request.method == UH_HTTP_MSG_POST)
++	if (cl->request.method == UH_HTTP_MSG_POST || cl->request.method == UH_HTTP_MSG_PUT)
+ 	{
+ 		foreach_header(i, cl->request.headers)
+ 		{
+diff --git a/uhttpd.c b/uhttpd.c
+index f9ac3db..9295f73 100644
+--- a/uhttpd.c
++++ b/uhttpd.c
+@@ -33,7 +33,7 @@
+ #endif
+ 
+ 
+-const char * http_methods[] = { "GET", "POST", "HEAD", };
++const char * http_methods[] = { "GET", "POST", "HEAD", "PUT", };
+ const char * http_versions[] = { "HTTP/0.9", "HTTP/1.0", "HTTP/1.1", };
+ 
+ static int run = 1;
+@@ -284,6 +284,8 @@ static struct http_request * uh_http_header_parse(struct client *cl,
+ 			req->method = UH_HTTP_MSG_POST;
+ 		else if (method && !strcmp(method, "HEAD"))
+ 			req->method = UH_HTTP_MSG_HEAD;
++		else if (method && !strcmp(method, "PUT"))
++			req->method = UH_HTTP_MSG_PUT;
+ 		else
+ 		{
+ 			/* invalid method */
+diff --git a/uhttpd.h b/uhttpd.h
+index e4e726b..8e4a463 100644
+--- a/uhttpd.h
++++ b/uhttpd.h
+@@ -128,6 +128,7 @@ enum http_method {
+ 	UH_HTTP_MSG_GET,
+ 	UH_HTTP_MSG_POST,
+ 	UH_HTTP_MSG_HEAD,
++	UH_HTTP_MSG_PUT,
+ };
+ 
+ extern const char *http_methods[];

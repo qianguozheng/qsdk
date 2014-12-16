@@ -1,0 +1,10 @@
+--- a/proto-static.c	2013-06-17 12:10:34.650639661 +0800
++++ b/proto-static.c	2013-06-17 12:10:21.994576903 +0800
+@@ -33,6 +33,7 @@
+ static bool
+ static_proto_setup(struct static_proto_state *state)
+ {
++	interface_set_l3_dev(state->proto.iface, state->proto.iface->main_dev.dev);
+ 	return proto_apply_static_ip_settings(state->proto.iface, state->config) == 0;
+ }
+ 

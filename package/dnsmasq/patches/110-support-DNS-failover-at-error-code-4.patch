@@ -1,0 +1,35 @@
+--- a/src/forward.c
++++ b/src/forward.c
+@@ -1,4 +1,5 @@
+ /* dnsmasq is Copyright (c) 2000-2012 Simon Kelley
++   Copyright (c) 2013 The Linux Foundation. All rights reserved.
+ 
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+@@ -562,7 +563,7 @@ void reply_query(int fd, int family, tim
+    
+   server = forward->sentto;
+   
+-  if ((RCODE(header) == SERVFAIL || RCODE(header) == REFUSED) &&
++  if ((RCODE(header) == SERVFAIL || RCODE(header) == REFUSED || RCODE(header) == NOTIMP) &&
+       !option_bool(OPT_ORDER) &&
+       forward->forwardall == 0)
+     /* for broken servers, attempt to send to another one. */
+@@ -589,7 +590,7 @@ void reply_query(int fd, int family, tim
+   
+   if ((forward->sentto->flags & SERV_TYPE) == 0)
+     {
+-      if (RCODE(header) == SERVFAIL || RCODE(header) == REFUSED)
++      if (RCODE(header) == SERVFAIL || RCODE(header) == REFUSED || RCODE(header) == NOTIMP)
+ 	server = NULL;
+       else
+ 	{
+@@ -613,7 +614,7 @@ void reply_query(int fd, int family, tim
+      had replies from all to avoid filling the forwarding table when
+      everything is broken */
+   if (forward->forwardall == 0 || --forward->forwardall == 1 || 
+-      (RCODE(header) != REFUSED && RCODE(header) != SERVFAIL))
++      (RCODE(header) != REFUSED && RCODE(header) != SERVFAIL && RCODE(header) != NOTIMP))
+     {
+       int check_rebind = !(forward->flags & FREC_NOREBIND);
+ 

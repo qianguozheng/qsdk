@@ -1,0 +1,44 @@
+--- a/Makefile
++++ b/Makefile
+@@ -51,6 +51,8 @@ VENDOR=
+ TOPDIR	:= $(shell if [ "$$PWD" != "" ]; then echo $$PWD; else pwd; fi)
+ export	TOPDIR
+ 
++BUILDVERSION=$(shell if test -e $(KERNELPATH)/ath_version.mk ; then cat $(KERNELPATH)/ath_version.mk | sed s/EXTRAVERSION=-LSDK-//g; fi)
++
+ ifndef COMPRESSED_UBOOT
+ COMPRESSED_UBOOT = 0
+ endif 
+@@ -2011,6 +2013,10 @@ endif
+ ifneq ($(findstring ap123,$(BUILD_CONFIG)),)
+ 	@echo '#define CONFIG_AP123 1' >>include/config.h
+ endif
++ifneq ($(findstring cus227,$(BUILD_CONFIG)),)
++	@echo '#define CONFIG_CUS227 1' >>include/config.h
++endif
++	@echo "#define BUILD_VERSION "\"$(BUILDVERSION)\" >>include/config.h
+ 	@echo "#define CONFIG_AR7240 1" >>include/config.h
+ 	@echo "#define CONFIG_WASP 1" >>include/config.h
+ ifeq ($(BOOT_FROM_NAND),1)
+--- a/board/ar7240/db12x/db12x.c
++++ b/board/ar7240/db12x/db12x.c
+@@ -144,6 +144,8 @@ int	checkboard(args)
+ 	board_str("AP123\n");
+ #elif CONFIG_MI124
+ 	board_str("MI124\n");
++#elif CONFIG_CUS227
++	board_str("CUS227\n");
+ #else
+ 	board_str("DB120\n");
+ #endif
+--- a/lib_mips/board.c
++++ b/lib_mips/board.c
+@@ -58,7 +58,7 @@ extern ulong uboot_end;
+ ulong monitor_flash_len;
+ 
+ const char version_string[] =
+-	U_BOOT_VERSION" (" __DATE__ " - " __TIME__ ")";
++        U_BOOT_VERSION" (Build from LSDK-" BUILD_VERSION " at " __DATE__ " - " __TIME__ ")";
+ 
+ static char *failed = "*** failed ***\n";
+ 

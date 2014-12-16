@@ -1,0 +1,20 @@
+--- a/common/cmd_mii.c
++++ b/common/cmd_mii.c
+@@ -615,16 +615,13 @@ extern flash_info_t flash_info[];	/* inf
+ */
+ #ifdef CONFIG_ATH_NAND_BR
+ 
+-#define ATH_NAND_NAND_PART              "ath-nand"
+-
+-
+ unsigned long long
+ ath_nand_get_cal_offset(const char *ba)
+ {
+         char *mtdparts, ch, *pn, *end;
+         unsigned long long off = 0, size;
+ 
+-        mtdparts = strstr(ba, ATH_NAND_NAND_PART);
++        mtdparts = strstr(ba, "mtdparts=");
+         if (!mtdparts) {
+                 goto bad;
+         }

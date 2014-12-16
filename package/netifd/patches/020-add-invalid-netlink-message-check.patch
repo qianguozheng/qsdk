@@ -1,0 +1,25 @@
+diff -uNr a/system-linux.c b/system-linux.c
+--- a/system-linux.c	2013-12-09 18:15:02.681789718 +0800
++++ b/system-linux.c	2013-12-10 10:56:44.381288404 +0800
+@@ -538,6 +538,13 @@
+ }
+ 
+ static int
++cb_invalid_event(struct nl_msg *msg, void *arg)
++{
++	struct nlmsghdr *hdr = nlmsg_hdr(msg);
++	return (hdr->nlmsg_type == NLMSG_DONE)? NL_OK : NL_SKIP;
++}
++
++static int
+ error_handler(struct sockaddr_nl *nla, struct nlmsgerr *err, void *arg)
+ {
+ 	int *pending = arg;
+@@ -580,6 +587,7 @@
+ 		goto out;
+ 
+ 	nlmsg_append(clr.msg, &rtm, clr.size, 0);
++	nl_cb_set(cb, NL_CB_INVALID, NL_CB_CUSTOM, cb_invalid_event, NULL);
+ 	nl_cb_set(cb, NL_CB_VALID, NL_CB_CUSTOM, cb_clear_event, &clr);
+ 	nl_cb_set(cb, NL_CB_FINISH, NL_CB_CUSTOM, cb_finish_event, &pending);
+ 	nl_cb_err(cb, NL_CB_CUSTOM, error_handler, &pending);

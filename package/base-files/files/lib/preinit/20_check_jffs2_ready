@@ -1,0 +1,21 @@
+#!/bin/sh
+# Copyright (C) 2006-2010 OpenWrt.org
+# Copyright (C) 2010 Vertical Communications
+
+mount_no_jffs2() {
+    echo "jffs2 not ready yet; using ramdisk"
+    ramoverlay
+}
+
+check_for_jffs2() {
+    # skip jffs2 mounting even if it's there if we have volume named
+    # ubi_rootfs_data
+    check_skip || grep -qs ubi_rootfs_data /sys/class/ubi/ubi0/ubi0_*/name || {
+	jffs2_ready || {
+	    mount_no_jffs2 && pi_mount_skip_next=true
+	}
+    }
+}
+
+boot_hook_add preinit_mount_root check_for_jffs2
+

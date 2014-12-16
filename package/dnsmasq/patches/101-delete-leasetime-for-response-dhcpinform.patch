@@ -1,0 +1,16 @@
+--- a/src/rfc2131.c
++++ b/src/rfc2131.c
+@@ -1,4 +1,5 @@
+ /* dnsmasq is Copyright (c) 2000-2012 Simon Kelley
++   Copyright (c) 2013 The Linux Foundation. All rights reserved.
+ 
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+@@ -1391,7 +1392,6 @@ size_t dhcp_reply(struct dhcp_context *c
+ 	    time = 0xffffffff;
+ 	  else
+ 	    time = (unsigned int)difftime(lease->expires, now);
+-	  option_put(mess, end, OPTION_LEASE_TIME, 4, time);
+ 	  lease_set_interface(lease, int_index, now);
+ 	}
+ 

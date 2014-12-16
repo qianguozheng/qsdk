@@ -1,0 +1,12 @@
+--- a/arch/mips/ath79/mach-ap136.c
++++ b/arch/mips/ath79/mach-ap136.c
+@@ -185,6 +185,9 @@ static void __init ap136_setup(void)
+ 	/* GMAC0 is connected to an AR8327 switch */
+ 	ath79_eth0_data.phy_if_mode = PHY_INTERFACE_MODE_RGMII;
+ 	ath79_eth0_data.phy_mask = BIT(0);
++	ath79_eth0_data.speed = SPEED_1000;
++	ath79_eth0_data.duplex = DUPLEX_FULL;
++	ath79_eth0_data.force_link = 1;
+ 	ath79_eth0_data.mii_bus_dev = &ath79_mdio0_device.dev;
+ 	ath79_eth0_pll_data.pll_1000 = 0xa6000000;
+ 
